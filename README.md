@@ -7,7 +7,7 @@
 ## 🌐 Live Demo & Deployment
 
 - **Repository**: [https://github.com/sreedharun/AirWise](https://github.com/sreedharun/AirWise)
-- **Live Demo**: Ready for one-click deployment on [Vercel](https://vercel.com/) or [Netlify](https://www.netlify.com/).
+- **Live Demo**: [https://air-wise-sand.vercel.app/](https://air-wise-sand.vercel.app/)
 - **Production Build**: Zero server-side runtime needed — compiles to pure static HTML, CSS, and JavaScript.
 
 ### Deploying to Vercel
