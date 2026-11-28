@@ -28,6 +28,40 @@ City residents struggle to interpret raw air quality readings (e.g., `45 µg/m³
 
 ---
 
+## 🎯 Challenge Requirements & Solution Architecture
+
+### 1. Chosen Vertical & Persona Targeting
+- **Chosen Vertical**: **Urban Environmental Health & Air Quality Intelligence**
+- **Target Personas & Logics**:
+  1. `general` — **General Public**: Baseline commuters and residents seeking everyday outdoor and ventilation advice.
+  2. `children` — **Children & Teenagers**: Higher minute ventilation, developing respiratory systems, and active outdoor play.
+  3. `elderly` — **Older Adults / Seniors**: Increased vulnerability to cardiovascular stress and compromised lung capacity.
+  4. `respiratory` — **Asthma, COPD & Respiratory Sensitivities**: High bronchial hyperreactivity; triggers specific reliever inhaler and N95 warnings.
+  5. `athletes` — **Outdoor Athletes & Workers**: Sustained deep-inhalation exposure; triggers exercise intensity adjustments and optimal training window analysis.
+
+### 2. Approach and Logic
+- **Context-Aware Decision Matrix**: Rather than generic weather summaries, AirWise runs a deterministic 30-case matrix (6 US EPA AQI tiers × 5 vulnerability groups) grounded in EPA and WHO clinical literature.
+- **Categorical Protection Outputs**: Every state produces specific, actionable recommendations across 5 categories:
+  - **Outdoor Activity**: Exercise adjustments, intensity modulation, or staying indoors.
+  - **Masks**: Specific guidance on N95/FFP2/KN95 particle filtration when PM2.5 or PM10 exceeds safe thresholds.
+  - **Ventilation**: Guidance on whether to open windows for fresh air or seal living spaces.
+  - **Air Purifiers**: Operating instructions for HEPA filters and recirculation settings.
+  - **Special Precautions**: Reliever inhaler accessibility, symptom vigilance, and emergency alerts.
+- **Dynamic "Assistant" Engine**: Chat-like interactive inquiries provide instant answers without external LLM dependencies, ensuring zero latency, zero API costs, zero hallucination risk, and 100% offline functionality.
+
+### 3. How the Solution Works (End-to-End Flow)
+1. **Input & Geolocation**: User inputs a city (sanitized against XSS, debounced by 300 ms) or grants geolocation permissions.
+2. **Two-Tier Caching**: Checks in-memory cache and `sessionStorage` (5-min air quality, 10-min geocoding) to serve instant responses and support offline viewing.
+3. **Data Fetching & Normalization**: Securely calls Open-Meteo's Air Quality API over HTTPS with `&timezone=auto` and an 8-second `AbortController` timeout.
+4. **Real-time Assessment**: Computes dominant US AQI category, positions the continuous gauge, and evaluates 6 key pollutants with plain-language explanations.
+5. **48-Hour Forecast & Analysis**: Parses hourly data directly in the city's local wall-clock time, plots the trend on a custom responsive SVG chart (<6 KB), and identifies the optimal outdoor time window.
+6. **Accessible & Responsive Delivery**: Renders through WCAG 2.1 AA certified UI with colorblind-safe patterns, live screen-reader regions (`aria-live="polite"`), and an alternate Data Table view.
+
+### 4. Assumptions Made
+See the detailed **[Assumptions & Limitations](#-assumptions--limitations)** section below detailing the Copernicus CAMS/NOAA GFS ~11 km spatial resolution, 1-hour model update cycles, and offline local cache boundaries.
+
+---
+
 ## 🏆 Hackathon Evaluation Criteria Alignment
 
 ### 1. Code Quality
