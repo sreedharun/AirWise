@@ -1,3 +1,5 @@
+import { GEO_BOUNDS } from './constants';
+
 /**
  * Input sanitization and security validation utilities.
  * Ensures data passed into the application cannot trigger script injection
@@ -9,6 +11,10 @@
  * Strips script/style tags with contents, strips HTML tags,
  * trims whitespace, limits length to 100 characters.
  * Supports Unicode letters (\p{L}) for international city names.
+ *
+ * @param query Raw query input of unknown type.
+ * @returns Clean, safe alphanumeric string with international character support.
+ * @example sanitizeSearchQuery("<script>alert(1)</script>São Paulo") => "São Paulo"
  */
 export function sanitizeSearchQuery(query: unknown): string {
   if (typeof query !== 'string') {
@@ -24,17 +30,33 @@ export function sanitizeSearchQuery(query: unknown): string {
 }
 
 /**
- * Validates latitude value (-90 to 90).
+ * Validates latitude value (-90 to 90 degrees).
+ *
+ * @param lat Input value to validate.
+ * @returns True if value is a finite number within valid latitude range.
  */
 export function isValidLatitude(lat: unknown): lat is number {
-  return typeof lat === 'number' && Number.isFinite(lat) && lat >= -90 && lat <= 90;
+  return (
+    typeof lat === 'number' &&
+    Number.isFinite(lat) &&
+    lat >= GEO_BOUNDS.MIN_LATITUDE &&
+    lat <= GEO_BOUNDS.MAX_LATITUDE
+  );
 }
 
 /**
- * Validates longitude value (-180 to 180).
+ * Validates longitude value (-180 to 180 degrees).
+ *
+ * @param lon Input value to validate.
+ * @returns True if value is a finite number within valid longitude range.
  */
 export function isValidLongitude(lon: unknown): lon is number {
-  return typeof lon === 'number' && Number.isFinite(lon) && lon >= -180 && lon <= 180;
+  return (
+    typeof lon === 'number' &&
+    Number.isFinite(lon) &&
+    lon >= GEO_BOUNDS.MIN_LONGITUDE &&
+    lon <= GEO_BOUNDS.MAX_LONGITUDE
+  );
 }
 
 /**

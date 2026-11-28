@@ -93,4 +93,19 @@ describe('useGeolocation hook', () => {
 
     expect(result.current.error).toContain('currently unavailable');
   });
+
+  it('handles unsupported browser environment where geolocation is undefined', async () => {
+    // @ts-expect-error test undefined geolocation
+    delete global.navigator.geolocation;
+
+    const { result } = renderHook(() => useGeolocation());
+
+    let location;
+    await act(async () => {
+      location = await result.current.getCurrentLocation();
+    });
+
+    expect(location).toBeNull();
+    expect(result.current.error).toContain('not supported by your browser');
+  });
 });

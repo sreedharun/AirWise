@@ -1,3 +1,5 @@
+import { CACHE_CONFIG } from './constants';
+
 /**
  * In-memory and sessionStorage cache with TTL (Time To Live).
  * Facilitates quick offline retrieval and avoids redundant network calls.
@@ -9,13 +11,19 @@ interface CacheEntry<T> {
 }
 
 const memoryStore = new Map<string, CacheEntry<unknown>>();
-const DEFAULT_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
+/**
+ * Service managing two-tier memory and sessionStorage caching with TTL expiration.
+ */
 export class CacheService {
-  private static prefix = 'airwise_cache_';
+  private static prefix = CACHE_CONFIG.STORAGE_KEY_PREFIX;
 
   /**
    * Retrieves an item from cache if not expired.
+   *
+   * @template T Expected cached data type.
+   * @param key Identifier key.
+   * @returns Cached value if valid, or null if expired/missing.
    */
   public static get<T>(key: string): T | null {
     const fullKey = `${this.prefix}${key}`;
@@ -53,8 +61,17 @@ export class CacheService {
 
   /**
    * Stores an item into memory and sessionStorage.
+   *
+   * @template T Data payload type.
+   * @param key Identifier key.
+   * @param data Payload to store.
+   * @param ttlMs Time-to-live duration in milliseconds.
    */
-  public static set<T>(key: string, data: T, ttlMs: number = DEFAULT_TTL_MS): void {
+  public static set<T>(
+    key: string,
+    data: T,
+    ttlMs: number = CACHE_CONFIG.AIR_QUALITY_TTL_MS
+  ): void {
     const fullKey = `${this.prefix}${key}`;
     const expiry = Date.now() + ttlMs;
     const entry: CacheEntry<T> = { data, expiry };

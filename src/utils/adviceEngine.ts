@@ -1086,7 +1086,14 @@ const ADVICE_MATRIX: Record<AQICategoryLevel, Record<UserGroup, AdviceMatrixEntr
 };
 
 /**
- * Generates deterministic rule-based advice for a specific AQI value and user group.
+ * Generates deterministic, clinical rule-based advice for an AQI value and health persona.
+ * Evaluates the 30-case matrix (6 EPA AQI levels x 5 health groups) covering exercise, masks,
+ * ventilation, air filtration, and emergency precautions.
+ *
+ * @param aqi Numerical US AQI score.
+ * @param group Target health vulnerability persona.
+ * @returns Complete AdviceReport containing headlines, categorized actions, dos, donts, and disclaimer.
+ * @example generateAdvice(65, 'respiratory')
  */
 export function generateAdvice(aqi: number, group: UserGroup): AdviceReport {
   const categoryLevel = getAQICategory(aqi);

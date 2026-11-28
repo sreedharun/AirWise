@@ -57,6 +57,12 @@ export function formatDayLabel(isoString: string, reference: Date | string = new
 
 /**
  * Parses raw hourly API data into a validated 48-hour forecast analysis using the city's local time.
+ * Calculates optimal outdoor air windows, prevailing trends, and statistical extremes.
+ *
+ * @param hourly Raw API hourly arrays of time, us_aqi, and pm2_5.
+ * @param cityCurrentTime Reference local timestamp in the city.
+ * @param timezone City's IANA timezone identifier (e.g. "Asia/Tokyo").
+ * @returns Comprehensive ForecastAnalysis object including hourly points and summary text.
  */
 export function parseForecastData(
   hourly: {

@@ -14,20 +14,15 @@ import { ErrorBanner } from './components/ErrorBanner';
 import { EmptyState } from './components/EmptyState';
 import { MedicalDisclaimer } from './components/MedicalDisclaimer';
 import { Footer } from './components/Footer';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { DEFAULT_INITIAL_CITY } from './utils/constants';
 
 // Lazy-load the 48-hour forecast chart for efficiency and code-splitting
 const ForecastChart = React.lazy(() =>
   import('./components/ForecastChart').then((m) => ({ default: m.ForecastChart }))
 );
 
-// Initial default city for rich immediate display
-const DEFAULT_CITY: GeoLocation = {
-  name: 'New York',
-  country: 'United States',
-  admin1: 'New York',
-  latitude: 40.7128,
-  longitude: -74.006,
-};
+const DEFAULT_CITY: GeoLocation = DEFAULT_INITIAL_CITY;
 
 export const App: React.FC = () => {
   const [userGroup, setUserGroup] = useState<UserGroup>('general');
@@ -113,9 +108,17 @@ export const App: React.FC = () => {
             <CurrentAQICard data={data} />
 
             {/* 48-Hour Forecast with Best Time Highlight & Accessible Table (Lazy-loaded) */}
-            <React.Suspense fallback={<div className="skeleton-block chart" aria-busy="true" />}>
-              <ForecastChart forecast={data.forecast} />
-            </React.Suspense>
+            <ErrorBoundary
+              fallback={
+                <div className="error-banner" style={{ margin: '1rem 0', padding: '1rem' }}>
+                  <p>Unable to display the forecast chart at this time.</p>
+                </div>
+              }
+            >
+              <React.Suspense fallback={<div className="skeleton-block chart" aria-busy="true" />}>
+                <ForecastChart forecast={data.forecast} />
+              </React.Suspense>
+            </ErrorBoundary>
 
             {/* Rule-Based Deterministic Assistant & Inquiry Panel */}
             <AssistantPanel

@@ -111,9 +111,10 @@ See the detailed **[Assumptions & Limitations](#-assumptions--limitations)** sec
 ### 4. Testing & Code Coverage
 
 - **Vitest + React Testing Library + vitest-axe + v8 Coverage**:
-  - **106 passing automated tests** across **16 test suites** with **94.4% statement coverage** and **90.3% function coverage**.
+  - **120 passing automated tests** across **18 test suites** with **95.5% statement coverage** and **91.1% function coverage** (core source statements >98%).
   - **Automated Accessibility Testing (`vitest-axe`)**: Automated axe assertions testing the main screen and components for zero WCAG violations.
-  - **Custom Hook Tests**: Comprehensive test suites for `useDebounce`, `useGeolocation`, and `useOnlineStatus`.
+  - **Robust Error Boundary Testing**: Validates crash recovery, error interception, and user reload actions.
+  - **Custom Hook Tests**: Comprehensive test suites for `useDebounce`, `useGeolocation`, `useOnlineStatus`, and `useAirQuality`.
   - **Exhaustive Advice Matrix Testing**: Every AQI category (6) × every vulnerability group (5) = all 30 combinations verified for completeness, headlines, 5 action categories, and dos/donts.
   - Component tests for Search autocomplete, keyboard navigation, Geolocation permission denials, SVG chart interactions, data table alternate view, and chat inquiries.
   - Continuous Integration via GitHub Actions (`.github/workflows/ci.yml`).
@@ -210,7 +211,7 @@ npm run format
 ### Running Tests & Coverage
 
 ```bash
-# Run 106 unit, a11y, and component tests
+# Run 120 unit, a11y, and component tests
 npm test
 
 # Run tests with code coverage report
@@ -258,7 +259,8 @@ airwise/
 │   │   ├── adviceEngine.ts  # Deterministic 30-case rule-based health advisor
 │   │   ├── forecast.ts      # 48-hour hourly parser & local time analysis
 │   │   ├── cache.ts         # Memory + sessionStorage TTL caching service
-│   │   └── sanitize.ts      # Input sanitization and coordinate validator
+│   │   ├── sanitize.ts      # Input sanitization and coordinate validator
+│   │   └── constants.ts     # Consolidated application constants, boundaries & endpoints
 │   ├── hooks/
 │   │   ├── useDebounce.ts   # Debounce hook for smooth search
 │   │   ├── useAirQuality.ts # Main state manager with AbortController
@@ -272,6 +274,7 @@ airwise/
 │   │   ├── PollutantCard.tsx# Individual pollutant card with health impact explanation
 │   │   ├── ForecastChart.tsx# Responsive custom SVG chart & data table alternate
 │   │   ├── AssistantPanel.tsx# Chat-style deterministic health guidance
+│   │   ├── ErrorBoundary.tsx# Crash prevention boundary with recovery fallback
 │   │   ├── LoadingSkeleton.tsx# Screen-reader accessible loading skeleton
 │   │   ├── ErrorBanner.tsx  # Error notification with retry trigger
 │   │   ├── EmptyState.tsx   # Welcome prompt with quick explore link
@@ -293,10 +296,12 @@ airwise/
 │       ├── useDebounce.test.ts # Debounce hook unit tests
 │       ├── useGeolocation.test.ts # Geolocation hook unit tests
 │       ├── useOnlineStatus.test.ts # Online/offline hook unit tests
+│       ├── useAirQuality.test.ts # State coordinator & refetch unit tests
 │       ├── SearchBar.test.tsx# Search & geolocation component tests
 │       ├── CurrentAQICard.test.tsx# AQI card & pollutant breakdown tests
 │       ├── ForecastChart.test.tsx # Chart rendering & table toggle tests
 │       ├── AssistantPanel.test.tsx# Advisor actions & chat stream tests
+│       ├── ErrorBoundary.test.tsx# Crash recovery & retry fallback tests
 │       └── App.test.tsx     # Full integration tests
 ```
 

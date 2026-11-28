@@ -45,6 +45,63 @@ describe('API Client & Services', () => {
         /status 404/i
       );
     });
+
+    it('handles request timeout gracefully and throws TIMEOUT error', async () => {
+      // Mock fetch that simulates hanging until timeout aborts
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        return new Promise((_, reject) => {
+          if (options?.signal) {
+            options.signal.addEventListener('abort', () => {
+              const abortErr = new Error('The operation was aborted');
+              abortErr.name = 'AbortError';
+              reject(abortErr);
+            });
+          }
+        });
+      });
+
+      await expect(
+        fetchWithTimeout('https://secure-api.com/slow', { timeoutMs: 20 })
+      ).rejects.toThrow(/timed out/i);
+    });
+
+    it('handles caller signal cancellation and throws ABORTED error', async () => {
+      const controller = new AbortController();
+      global.fetch = vi.fn().mockImplementation((_url, options) => {
+        return new Promise((_, reject) => {
+          if (options?.signal) {
+            options.signal.addEventListener('abort', () => {
+              const abortErr = new Error('The operation was aborted');
+              abortErr.name = 'AbortError';
+              reject(abortErr);
+            });
+          }
+        });
+      });
+
+      const fetchPromise = fetchWithTimeout('https://secure-api.com/cancel', {
+        signal: controller.signal,
+      });
+      controller.abort();
+
+      await expect(fetchPromise).rejects.toThrow(/was cancelled/i);
+    });
+
+    it('handles generic network error and wraps as NETWORK_ERROR', async () => {
+      global.fetch = vi.fn().mockRejectedValue(new Error('DNS resolution failed'));
+
+      await expect(fetchWithTimeout('https://secure-api.com/dns-fail')).rejects.toThrow(
+        /DNS resolution failed/i
+      );
+    });
+
+    it('handles unknown non-Error rejection and wraps as UNKNOWN_ERROR', async () => {
+      global.fetch = vi.fn().mockRejectedValue('String rejection reason');
+
+      await expect(fetchWithTimeout('https://secure-api.com/unknown')).rejects.toThrow(
+        /An unknown error occurred/i
+      );
+    });
   });
 
   describe('searchCities', () => {

@@ -113,7 +113,11 @@ export const AQI_CATEGORIES: Record<AQICategoryLevel, AQICategoryConfig> = {
 };
 
 /**
- * Returns the AQICategoryLevel for a given numerical US AQI value.
+ * Determines the US EPA AQI Category Level for a given numerical AQI value.
+ *
+ * @param aqi Numerical US AQI score (0 to 500+).
+ * @returns Standard category level identifier ('good' | 'moderate' | 'unhealthy-sensitive' | 'unhealthy' | 'very-unhealthy' | 'hazardous').
+ * @example getAQICategory(42) => 'good'
  */
 export function getAQICategory(aqi: number): AQICategoryLevel {
   const rounded = Math.round(Math.max(0, aqi));
@@ -126,7 +130,10 @@ export function getAQICategory(aqi: number): AQICategoryLevel {
 }
 
 /**
- * Gets full configuration object for an AQI value.
+ * Retrieves the full accessibility, styling, and textual configuration for an AQI value.
+ *
+ * @param aqi Numerical US AQI score.
+ * @returns Complete AQICategoryConfig with colors, icons, tactile patterns, and descriptions.
  */
 export function getAQIConfig(aqi: number): AQICategoryConfig {
   const category = getAQICategory(aqi);
@@ -134,7 +141,11 @@ export function getAQIConfig(aqi: number): AQICategoryConfig {
 }
 
 /**
- * Evaluates individual pollutant status based on WHO/EPA guidelines.
+ * Evaluates individual pollutant status based on international WHO and US EPA ambient guidelines.
+ *
+ * @param key Pollutant identifier string.
+ * @param value Measured concentration.
+ * @returns Status string ('good' | 'moderate' | 'unhealthy' | 'hazardous').
  */
 export function evaluatePollutantStatus(
   key: string,
